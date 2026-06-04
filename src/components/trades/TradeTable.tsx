@@ -6,11 +6,13 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import TradeForm from '@/components/trades/TradeForm'
 import type { Trade } from '@/types/trade'
 
 interface Props {
   trades: Trade[]
   onDelete: (id: string) => void
+  onUpdate: (id: string, data: Omit<Trade, 'id' | 'status' | 'netPnL'>) => void
 }
 
 function fmtDate(iso: string) {
@@ -50,7 +52,7 @@ function ScreenshotViewer({ src, onClose }: { src: string; onClose: () => void }
   )
 }
 
-export default function TradeTable({ trades, onDelete }: Props) {
+export default function TradeTable({ trades, onDelete, onUpdate }: Props) {
   const [sortKey, setSortKey] = useState<SortKey>('exitDate')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [filter, setFilter] = useState('')
@@ -167,14 +169,17 @@ export default function TradeTable({ trades, onDelete }: Props) {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7 text-muted-foreground hover:text-red-400"
-                      onClick={() => { onDelete(t.id); toast.error('Trade deleted') }}
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <TradeForm trade={t} onUpdate={onUpdate} />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7 text-muted-foreground hover:text-red-400"
+                        onClick={() => { onDelete(t.id); toast.error('Trade deleted') }}
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}

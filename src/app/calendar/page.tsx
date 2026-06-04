@@ -6,7 +6,7 @@ import TradeForm from '@/components/trades/TradeForm'
 import { useTrades } from '@/hooks/useTrades'
 
 export default function CalendarPage() {
-  const { trades, addTrade } = useTrades()
+  const { trades, addTrade, updateTrade } = useTrades()
 
   return (
     <AppShell>
@@ -15,7 +15,7 @@ export default function CalendarPage() {
           <h1 className="text-xl font-bold">Calendar</h1>
           <TradeForm onAdd={addTrade} />
         </div>
-        <TradeCalendar trades={trades} />
+        <TradeCalendar trades={trades} onUpdate={updateTrade} />
       </div>
     </AppShell>
   )

@@ -11,7 +11,6 @@ export interface Trade {
   exitPrice: number
   quantity: number     // contracts
   grossPnL: number
-  commission: number
   netPnL: number
   status: TradeStatus
   strategy?: string

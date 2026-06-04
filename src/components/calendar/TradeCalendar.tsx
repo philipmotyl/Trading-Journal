@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { tradesByDay } from '@/lib/analytics'
+import TradeForm from '@/components/trades/TradeForm'
 import type { Trade } from '@/types/trade'
 
 const DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -51,10 +52,11 @@ function weeksInMonth(year: number, month: number): (Date | null)[][] {
 }
 
 // ── Day detail panel ──────────────────────────────────────────────────────────
-function DayPanel({ dateKey, trades, onClose }: {
+function DayPanel({ dateKey, trades, onClose, onUpdate }: {
   dateKey: string
   trades: Trade[]
   onClose: () => void
+  onUpdate: (id: string, data: Omit<Trade, 'id' | 'status' | 'netPnL'>) => void
 }) {
   const pnl     = trades.reduce((s, t) => s + t.netPnL, 0)
   const wins    = trades.filter(t => t.status === 'WIN').length
@@ -91,7 +93,7 @@ function DayPanel({ dateKey, trades, onClose }: {
           <ul className="divide-y divide-border">
             {trades.map(t => (
               <li key={t.id} className="p-4 hover:bg-accent/20 transition-colors">
-                {/* Row 1: symbol + side + P&L */}
+                {/* Row 1: symbol + side + P&L + edit */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-foreground">{t.symbol}</span>
@@ -118,9 +120,12 @@ function DayPanel({ dateKey, trades, onClose }: {
                       {t.status}
                     </Badge>
                   </div>
-                  <span className={cn('font-bold tabular-nums text-sm', t.netPnL >= 0 ? 'text-emerald-400' : 'text-red-400')}>
-                    {fmtFull$(t.netPnL)}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className={cn('font-bold tabular-nums text-sm', t.netPnL >= 0 ? 'text-emerald-400' : 'text-red-400')}>
+                      {fmtFull$(t.netPnL)}
+                    </span>
+                    <TradeForm trade={t} onUpdate={onUpdate} />
+                  </div>
                 </div>
 
                 {/* Row 2: entry → exit prices */}
@@ -180,7 +185,7 @@ function DayPanel({ dateKey, trades, onClose }: {
 }
 
 // ── Main calendar ─────────────────────────────────────────────────────────────
-export default function TradeCalendar({ trades }: { trades: Trade[] }) {
+export default function TradeCalendar({ trades, onUpdate }: { trades: Trade[]; onUpdate: (id: string, data: Omit<Trade, 'id' | 'status' | 'netPnL'>) => void }) {
   const now = new Date()
   const [year,        setYear]       = useState(now.getFullYear())
   const [month,       setMonth]      = useState(now.getMonth())
@@ -324,6 +329,7 @@ export default function TradeCalendar({ trades }: { trades: Trade[] }) {
           dateKey={selectedDay}
           trades={selectedTrades}
           onClose={() => setSelectedDay(null)}
+          onUpdate={onUpdate}
         />
       )}
     </div>

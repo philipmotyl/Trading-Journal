@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, ImagePlus, X } from 'lucide-react'
+import { Plus, Pencil, ImagePlus, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,7 +12,9 @@ import { STRATEGIES, SYMBOLS } from '@/types/trade'
 import type { Trade } from '@/types/trade'
 
 interface Props {
-  onAdd: (data: Omit<Trade, 'id' | 'status' | 'netPnL'>) => void
+  onAdd?: (data: Omit<Trade, 'id' | 'status' | 'netPnL'>) => void
+  onUpdate?: (id: string, data: Omit<Trade, 'id' | 'status' | 'netPnL'>) => void
+  trade?: Trade
 }
 
 function today() {
@@ -26,12 +28,8 @@ const DEFAULT: Partial<Trade> = {
   entryPrice: 0,
   exitPrice: 0,
   grossPnL: 0,
-  commission: 4.18,
-  entryDate: today(),
-  exitDate: today(),
 }
 
-// Compress image to max 900px JPEG at 75% quality (~100-200 KB)
 function compressImage(file: File): Promise<string> {
   return new Promise(resolve => {
     const img = new Image()
@@ -50,34 +48,40 @@ function compressImage(file: File): Promise<string> {
   })
 }
 
-export default function TradeForm({ onAdd }: Props) {
+export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
+  const isEdit = !!trade
   const [open, setOpen] = useState(false)
   const [f, setF] = useState<Partial<Trade>>(DEFAULT)
   const [uploading, setUploading] = useState(false)
+
+  function handleOpenChange(val: boolean) {
+    if (val) {
+      setF(isEdit ? { ...trade } : { ...DEFAULT, entryDate: today(), exitDate: today() })
+    }
+    setOpen(val)
+  }
 
   function set(key: keyof Trade, value: string | number | string[]) {
     setF(prev => {
       const next = { ...prev, [key]: value }
       if (['entryPrice', 'exitPrice', 'quantity', 'side', 'symbol'].includes(key)) {
-        const ep  = key === 'entryPrice' ? +value : +(prev.entryPrice ?? 0)
-        const xp  = key === 'exitPrice'  ? +value : +(prev.exitPrice ?? 0)
-        const qty = key === 'quantity'   ? +value : +(prev.quantity ?? 1)
-        const sym = key === 'symbol'     ? value as string : (prev.symbol ?? 'MES')
-        const side = key === 'side'      ? value as string : (prev.side ?? 'LONG')
-        // Dollar value per full point per contract for each symbol
+        const ep   = key === 'entryPrice' ? +value : +(prev.entryPrice ?? 0)
+        const xp   = key === 'exitPrice'  ? +value : +(prev.exitPrice ?? 0)
+        const qty  = key === 'quantity'   ? +value : +(prev.quantity ?? 1)
+        const sym  = key === 'symbol'     ? value as string : (prev.symbol ?? 'MES')
+        const side = key === 'side'       ? value as string : (prev.side ?? 'LONG')
         const POINT_VALUE: Record<string, number> = {
-          MES: 5,   // Micro E-mini S&P 500
-          ES:  50,  // E-mini S&P 500
-          MNQ: 2,   // Micro E-mini Nasdaq 100
-          NQ:  20,  // E-mini Nasdaq 100 (mini, NOT micro)
-          MCL: 100, // Micro Crude Oil
-          MGC: 10,  // Micro Gold
-          MBT: 5,   // Micro Bitcoin
+          MES: 5,
+          ES:  50,
+          MNQ: 2,
+          NQ:  20,
+          MCL: 100,
+          MGC: 10,
+          MBT: 5,
         }
         const tick = POINT_VALUE[sym] ?? 5
         const diff = side === 'LONG' ? xp - ep : ep - xp
-        next.grossPnL   = +(diff * qty * tick).toFixed(2)
-        next.commission = +(qty * 4.18).toFixed(2)
+        next.grossPnL = +(diff * qty * tick).toFixed(2)
       }
       return next
     })
@@ -101,7 +105,7 @@ export default function TradeForm({ onAdd }: Props) {
       toast.error('Fill in all required fields')
       return
     }
-    onAdd({
+    const data: Omit<Trade, 'id' | 'status' | 'netPnL'> = {
       symbol: f.symbol!,
       side: f.side!,
       entryDate: f.entryDate!,
@@ -110,29 +114,39 @@ export default function TradeForm({ onAdd }: Props) {
       exitPrice: f.exitPrice ?? 0,
       quantity: f.quantity ?? 1,
       grossPnL: f.grossPnL ?? 0,
-      commission: f.commission ?? 4.18,
       strategy: f.strategy,
       notes: f.notes,
       mistakes: f.mistakes,
       tags: f.tags,
       screenshot: f.screenshot,
-    })
-    toast.success('Trade logged')
+    }
+    if (isEdit && trade && onUpdate) {
+      onUpdate(trade.id, data)
+      toast.success('Trade updated')
+    } else if (onAdd) {
+      onAdd(data)
+      toast.success('Trade logged')
+    }
     setOpen(false)
-    setF({ ...DEFAULT, entryDate: today(), exitDate: today() })
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-2">
-          <Plus className="size-4" />
-          Add Trade
-        </Button>
+        {isEdit ? (
+          <Button variant="ghost" size="icon" className="size-7 text-muted-foreground hover:text-primary">
+            <Pencil className="size-3.5" />
+          </Button>
+        ) : (
+          <Button size="sm" className="gap-2">
+            <Plus className="size-4" />
+            Add Trade
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Log a Trade</DialogTitle>
+          <DialogTitle>{isEdit ? 'Edit Trade' : 'Log a Trade'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 pt-2">
 
@@ -184,25 +198,17 @@ export default function TradeForm({ onAdd }: Props) {
           </div>
 
           {/* Contracts */}
-          <div className="space-y-1.5">
+          <div className="col-span-2 space-y-1.5">
             <Label>Contracts</Label>
             <Input type="number" min="1" value={f.quantity || ''} onChange={e => set('quantity', +e.target.value)} />
           </div>
 
-          {/* Commission */}
-          <div className="space-y-1.5">
-            <Label>Commission <span className="text-xs text-muted-foreground">(auto)</span></Label>
-            <Input type="number" step="0.01" value={f.commission || ''} onChange={e => set('commission', +e.target.value)} />
-          </div>
-
-          {/* Gross P&L */}
+          {/* P&L */}
           <div className="col-span-2 space-y-1.5">
             <Label>
-              Gross P&L
+              P&L
               <span className={`ml-2 text-sm font-semibold tabular-nums ${(f.grossPnL ?? 0) >= 0 ? 'text-emerald-500' : 'text-red-400'}`}>
                 {(f.grossPnL ?? 0) >= 0 ? '+' : ''}{(f.grossPnL ?? 0).toFixed(2)}
-                {' → Net: '}
-                {((f.grossPnL ?? 0) - (f.commission ?? 0)).toFixed(2)}
               </span>
             </Label>
             <Input type="number" step="0.01" value={f.grossPnL ?? ''} onChange={e => set('grossPnL', +e.target.value)} />
@@ -264,7 +270,7 @@ export default function TradeForm({ onAdd }: Props) {
           {/* Actions */}
           <div className="col-span-2 flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit">Save Trade</Button>
+            <Button type="submit">{isEdit ? 'Update Trade' : 'Save Trade'}</Button>
           </div>
         </form>
       </DialogContent>

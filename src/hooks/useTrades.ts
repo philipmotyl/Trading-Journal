@@ -32,7 +32,7 @@ export function useTrades() {
   }, [trades])
 
   const addTrade = useCallback((data: Omit<Trade, 'id' | 'status' | 'netPnL'>) => {
-    const netPnL = data.grossPnL - data.commission
+    const netPnL = data.grossPnL
     const trade: Trade = {
       ...data,
       id: crypto.randomUUID(),
@@ -47,7 +47,7 @@ export function useTrades() {
     setTrades(prev => prev.map(t => {
       if (t.id !== id) return t
       const updated = { ...t, ...patch }
-      updated.netPnL = updated.grossPnL - updated.commission
+      updated.netPnL = updated.grossPnL
       updated.status = deriveStatus(updated.side, updated.entryPrice, updated.exitPrice, updated.netPnL)
       return updated
     }))

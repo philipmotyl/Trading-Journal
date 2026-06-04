@@ -8,7 +8,6 @@ export interface Analytics {
   winRate: number
   netPnL: number
   grossPnL: number
-  totalCommission: number
   profitFactor: number
   avgWin: number
   avgLoss: number
@@ -39,7 +38,6 @@ export function computeAnalytics(trades: Trade[]): Analytics {
 
   const netPnL = trades.reduce((s, t) => s + t.netPnL, 0)
   const grossPnL = trades.reduce((s, t) => s + t.grossPnL, 0)
-  const totalCommission = trades.reduce((s, t) => s + t.commission, 0)
 
   const grossWins = wins.reduce((s, t) => s + t.netPnL, 0)
   const grossLosses = Math.abs(losses.reduce((s, t) => s + t.netPnL, 0))
@@ -95,7 +93,7 @@ export function computeAnalytics(trades: Trade[]): Analytics {
     lossCount: losses.length,
     breakevenCount: breakevens.length,
     winRate: winRate * 100,
-    netPnL, grossPnL, totalCommission,
+    netPnL, grossPnL,
     profitFactor, avgWin, avgLoss, avgWinLossRatio,
     maxDrawdown: maxDD,
     largestWin, largestLoss, expectancy, recoveryFactor,
@@ -141,7 +139,7 @@ export function tradesByDay(trades: Trade[]): Record<string, DayStats> {
 function emptyAnalytics(): Analytics {
   return {
     totalTrades: 0, winCount: 0, lossCount: 0, breakevenCount: 0,
-    winRate: 0, netPnL: 0, grossPnL: 0, totalCommission: 0,
+    winRate: 0, netPnL: 0, grossPnL: 0,
     profitFactor: 0, avgWin: 0, avgLoss: 0, avgWinLossRatio: 0,
     maxDrawdown: 0, largestWin: 0, largestLoss: 0,
     expectancy: 0, recoveryFactor: 0, performanceScore: 0,

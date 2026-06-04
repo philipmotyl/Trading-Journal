@@ -6,7 +6,7 @@ import TradeForm from '@/components/trades/TradeForm'
 import { useTrades } from '@/hooks/useTrades'
 
 export default function TradesPage() {
-  const { trades, addTrade, deleteTrade } = useTrades()
+  const { trades, addTrade, updateTrade, deleteTrade } = useTrades()
 
   return (
     <AppShell>
@@ -18,7 +18,7 @@ export default function TradesPage() {
           </div>
           <TradeForm onAdd={addTrade} />
         </div>
-        <TradeTable trades={trades} onDelete={deleteTrade} />
+        <TradeTable trades={trades} onDelete={deleteTrade} onUpdate={updateTrade} />
       </div>
     </AppShell>
   )
