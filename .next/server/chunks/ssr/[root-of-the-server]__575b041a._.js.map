@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 15, "column": 0}, "map": {"version":3,"sources":["file:///Users/philipmotyl/journal-app/src/components/providers.tsx"],"sourcesContent":["'use client'\n\nimport { ThemeProvider } from 'next-themes'\nimport { Toaster } from 'sonner'\n\nexport default function Providers({ children }: { children: React.ReactNode }) {\n  return (\n    <ThemeProvider attribute=\"class\" defaultTheme=\"dark\" disableTransitionOnChange>\n      {children}\n      <Toaster richColors position=\"bottom-right\" />\n    </ThemeProvider>\n  )\n}\n"],"names":[],"mappings":";;;;AAEA;AACA;AAHA;;;;AAKe,SAAS,UAAU,EAAE,QAAQ,EAAiC;IAC3E,qBACE,8OAAC,gJAAA,CAAA,gBAAa;QAAC,WAAU;QAAQ,cAAa;QAAO,yBAAyB;;YAC3E;0BACD,8OAAC,wIAAA,CAAA,UAAO;gBAAC,UAAU;gBAAC,UAAS;;;;;;;;;;;;AAGnC","debugId":null}}]
-}
