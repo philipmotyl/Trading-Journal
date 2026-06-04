@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background:                var(--background);
+  --color-foreground:                var(--foreground);
+  --color-card:                      var(--card);
+  --color-card-foreground:           var(--card-foreground);
+  --color-popover:                   var(--popover);
+  --color-popover-foreground:        var(--popover-foreground);
+  --color-primary:                   var(--primary);
+  --color-primary-foreground:        var(--primary-foreground);
+  --color-secondary:                 var(--secondary);
+  --color-secondary-foreground:      var(--secondary-foreground);
+  --color-muted:                     var(--muted);
+  --color-muted-foreground:          var(--muted-foreground);
+  --color-accent:                    var(--accent);
+  --color-accent-foreground:         var(--accent-foreground);
+  --color-destructive:               var(--destructive);
+  --color-border:                    var(--border);
+  --color-input:                     var(--input);
+  --color-ring:                      var(--ring);
+  --color-sidebar:                   var(--sidebar);
+  --color-sidebar-foreground:        var(--sidebar-foreground);
+  --color-sidebar-primary:           var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:            var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border:            var(--sidebar-border);
+  --color-win:                       var(--win);
+  --color-loss:                      var(--loss);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ─────────────────────────────────────
+   LIGHT  (crisp, purple-accented)
+───────────────────────────────────── */
+:root {
+  --radius: 0.5rem;
+  --background:              #f5f6fa;
+  --foreground:              #0f172a;
+  --card:                    #ffffff;
+  --card-foreground:         #0f172a;
+  --popover:                 #ffffff;
+  --popover-foreground:      #0f172a;
+  --primary:                 #7c3aed;
+  --primary-foreground:      #ffffff;
+  --secondary:               #ede9fe;
+  --secondary-foreground:    #4c1d95;
+  --muted:                   #f1f5f9;
+  --muted-foreground:        #64748b;
+  --accent:                  #ede9fe;
+  --accent-foreground:       #4c1d95;
+  --destructive:             #dc2626;
+  --border:                  #e2e8f0;
+  --input:                   #e2e8f0;
+  --ring:                    #7c3aed;
+  --sidebar:                 #ffffff;
+  --sidebar-foreground:      #0f172a;
+  --sidebar-primary:         #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent:          #ede9fe;
+  --sidebar-accent-foreground: #4c1d95;
+  --sidebar-border:          #e2e8f0;
+  --win:                     #059669;
+  --loss:                    #dc2626;
+}
+
+/* ─────────────────────────────────────
+   DARK  — Royal Deep Navy
+   Rich blue-indigo depth, purple brand,
+   gold highlights, visible borders
+───────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+
+  /* Page backgrounds — layered depth */
+  --background:              #0d1117;  /* deepest: main canvas */
+  --foreground:              #e2e8f0;  /* bright pearl — clearly readable */
+
+  /* Cards sit above the page */
+  --card:                    #161b27;  /* lifted royal navy */
+  --card-foreground:         #e2e8f0;
+
+  /* Popovers / dropdowns */
+  --popover:                 #1c2440;
+  --popover-foreground:      #e2e8f0;
+
+  /* Brand — royal violet */
+  --primary:                 #8b5cf6;  /* violet-500: rich purple */
+  --primary-foreground:      #ffffff;
+
+  /* Secondary surfaces */
+  --secondary:               #1e2d45;
+  --secondary-foreground:    #cbd5e1;
+
+  /* Muted backgrounds */
+  --muted:                   #172033;
+  --muted-foreground:        #94a3b8;  /* steel blue — never invisible */
+
+  /* Accent hover / active states */
+  --accent:                  #253350;  /* navy hover */
+  --accent-foreground:       #c7d2fe;  /* soft lavender text */
+
+  /* Status */
+  --destructive:             #f87171;  /* red-400 — visible on dark */
+
+  /* Borders — THIS was the invisible culprit — now clearly visible */
+  --border:                  #253347;  /* defined navy blue border */
+  --input:                   #172033;
+
+  /* Focus ring */
+  --ring:                    #8b5cf6;
+
+  /* ── Sidebar — distinctly darker than page ── */
+  --sidebar:                 #0a0e1a;  /* deepest navy */
+  --sidebar-foreground:      #e2e8f0;
+  --sidebar-primary:         #8b5cf6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent:          #1a2540;  /* hover state in sidebar */
+  --sidebar-accent-foreground: #c7d2fe;
+  --sidebar-border:          #1a2338;
+
+  /* Trade status */
+  --win:                     #34d399;  /* emerald-400 — bright on dark */
+  --loss:                    #f87171;  /* red-400 — clearly visible */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  /* Make scrollbars match the dark theme */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
+}
