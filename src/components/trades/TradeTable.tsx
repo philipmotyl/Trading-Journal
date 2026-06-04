@@ -25,6 +25,12 @@ function fmtMoney(n: number) {
 
 type SortKey = 'exitDate' | 'symbol' | 'netPnL' | 'strategy'
 
+// Defined at module level — never recreated during render
+function SortIcon({ active, dir }: { active: boolean; dir: 'asc' | 'desc' }) {
+  if (!active) return <ChevronUp className="size-3 opacity-30" />
+  return dir === 'asc' ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />
+}
+
 function ScreenshotViewer({ src, onClose }: { src: string; onClose: () => void }) {
   return (
     <div
@@ -74,11 +80,6 @@ export default function TradeTable({ trades, onDelete }: Props) {
       return 0
     })
 
-  function SortIcon({ k }: { k: SortKey }) {
-    if (sortKey !== k) return <ChevronUp className="size-3 opacity-30" />
-    return sortDir === 'asc' ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />
-  }
-
   return (
     <>
       {viewingScreenshot && (
@@ -99,7 +100,7 @@ export default function TradeTable({ trades, onDelete }: Props) {
               <tr>
                 {([['exitDate','Date'],['symbol','Symbol']] as [SortKey,string][]).map(([k,l]) => (
                   <th key={k} className="cursor-pointer px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground" onClick={() => toggleSort(k)}>
-                    <span className="flex items-center gap-1">{l}<SortIcon k={k} /></span>
+                    <span className="flex items-center gap-1">{l}<SortIcon active={sortKey === k} dir={sortDir} /></span>
                   </th>
                 ))}
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Side</th>
@@ -107,11 +108,11 @@ export default function TradeTable({ trades, onDelete }: Props) {
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Entry</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Exit</th>
                 <th className="cursor-pointer px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground" onClick={() => toggleSort('netPnL')}>
-                  <span className="flex items-center gap-1">Net P&L<SortIcon k="netPnL" /></span>
+                  <span className="flex items-center gap-1">Net P&L<SortIcon active={sortKey === 'netPnL'} dir={sortDir} /></span>
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Status</th>
                 <th className="cursor-pointer px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground" onClick={() => toggleSort('strategy')}>
-                  <span className="flex items-center gap-1">Strategy<SortIcon k="strategy" /></span>
+                  <span className="flex items-center gap-1">Strategy<SortIcon active={sortKey === 'strategy'} dir={sortDir} /></span>
                 </th>
                 <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Chart</th>
                 <th className="px-4 py-3" />

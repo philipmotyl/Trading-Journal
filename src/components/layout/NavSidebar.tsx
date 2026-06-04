@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -20,10 +19,9 @@ const navItems = [
 
 export default function NavSidebar() {
   const path = usePathname()
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDark = !mounted || theme === 'dark'
+  const { resolvedTheme, setTheme } = useTheme()
+  // resolvedTheme is undefined during SSR; default to dark (matches defaultTheme)
+  const isDark = resolvedTheme !== 'light'
 
   return (
     <aside className="flex h-full w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
