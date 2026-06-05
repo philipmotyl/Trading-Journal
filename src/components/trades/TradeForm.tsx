@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Pencil, ImagePlus, X } from 'lucide-react'
+import { Plus, Pencil, ImagePlus, X, Calendar, Clock } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -46,6 +46,55 @@ function compressImage(file: File): Promise<string> {
     }
     img.src = url
   })
+}
+
+function DateTimeField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: string
+  onChange: (v: string) => void
+}) {
+  const datePart = value ? value.slice(0, 10) : ''
+  const timePart = value ? value.slice(11, 16) : ''
+
+  function handleDate(d: string) {
+    onChange(`${d}T${timePart || '09:30'}:00Z`)
+  }
+  function handleTime(t: string) {
+    const base = datePart || new Date().toISOString().slice(0, 10)
+    onChange(`${base}T${t}:00Z`)
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <Label>{label}</Label>
+      <div className="flex gap-2">
+        {/* Date */}
+        <div className="relative flex-1">
+          <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+          <input
+            type="date"
+            value={datePart}
+            onChange={e => handleDate(e.target.value)}
+            className="h-9 w-full rounded-xl border border-input bg-input pl-9 pr-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
+          />
+        </div>
+        {/* Time */}
+        <div className="relative w-[116px]">
+          <Clock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+          <input
+            type="time"
+            value={timePart}
+            onChange={e => handleTime(e.target.value)}
+            className="h-9 w-full rounded-xl border border-input bg-input pl-9 pr-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
+          />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
@@ -116,7 +165,6 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
       grossPnL: f.grossPnL ?? 0,
       strategy: f.strategy,
       emotion: f.emotion,
-      emotionNotes: f.emotionNotes,
       setupTags: f.setupTags,
       notes: f.notes,
       mistakes: f.mistakes,
@@ -177,15 +225,21 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
           </div>
 
           {/* Entry date */}
-          <div className="space-y-1.5">
-            <Label>Entry date/time</Label>
-            <Input type="datetime-local" value={(f.entryDate ?? '').slice(0, 16)} onChange={e => set('entryDate', e.target.value + ':00Z')} />
+          <div className="col-span-2">
+            <DateTimeField
+              label="Entry date / time"
+              value={f.entryDate ?? ''}
+              onChange={v => set('entryDate', v)}
+            />
           </div>
 
           {/* Exit date */}
-          <div className="space-y-1.5">
-            <Label>Exit date/time</Label>
-            <Input type="datetime-local" value={(f.exitDate ?? '').slice(0, 16)} onChange={e => set('exitDate', e.target.value + ':00Z')} />
+          <div className="col-span-2">
+            <DateTimeField
+              label="Exit date / time"
+              value={f.exitDate ?? ''}
+              onChange={v => set('exitDate', v)}
+            />
           </div>
 
           {/* Entry price */}
@@ -231,7 +285,7 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
           </div>
 
           {/* Emotion */}
-          <div className={f.emotion ? 'col-span-2 space-y-1.5' : 'space-y-1.5'}>
+          <div className="space-y-1.5">
             <Label>Emotion</Label>
             <Select value={f.emotion ?? ''} onValueChange={v => set('emotion', v)}>
               <SelectTrigger><SelectValue placeholder="How did you feel?" /></SelectTrigger>
@@ -241,59 +295,19 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
             </Select>
           </div>
 
-          {/* Setup grade — only show when emotion is NOT selected (stays on same row) */}
-          {!f.emotion && (
-            <div className="space-y-1.5">
-              <Label>Setup Grade</Label>
-              <Select
-                value={f.setupTags?.[0] ?? ''}
-                onValueChange={v => set('setupTags', v ? [v] : [])}
-              >
-                <SelectTrigger><SelectValue placeholder="A+, A, B…" /></SelectTrigger>
-                <SelectContent>
-                  {SETUP_GRADES.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {/* Emotion "why?" follow-up — spans both columns, replaces empty slot */}
-          {f.emotion && (
-            <div className="col-span-2 space-y-1.5">
-              <Label className="text-muted-foreground text-xs">
-                Why did you feel <span className="text-foreground font-semibold">{f.emotion}</span>?
-              </Label>
-              <textarea
-                className="h-16 w-full resize-none rounded-xl border border-input bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                placeholder="What caused this feeling? Was it news, price action, a previous trade…?"
-                value={f.emotionNotes ?? ''}
-                onChange={e => set('emotionNotes', e.target.value)}
-              />
-            </div>
-          )}
-
-          {/* Setup grade — below emotion notes when emotion is selected */}
-          {f.emotion && (
-            <div className="col-span-2 space-y-1.5">
-              <Label>Setup Grade</Label>
-              <div className="flex flex-wrap gap-2">
-                {SETUP_GRADES.map(g => (
-                  <button
-                    key={g}
-                    type="button"
-                    onClick={() => set('setupTags', f.setupTags?.[0] === g ? [] : [g])}
-                    className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
-                      f.setupTags?.[0] === g
-                        ? 'border-primary bg-primary text-primary-foreground'
-                        : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
-                    }`}
-                  >
-                    {g}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Setup grade */}
+          <div className="space-y-1.5">
+            <Label>Setup Grade</Label>
+            <Select
+              value={f.setupTags?.[0] ?? ''}
+              onValueChange={v => set('setupTags', v ? [v] : [])}
+            >
+              <SelectTrigger><SelectValue placeholder="A+, A, B…" /></SelectTrigger>
+              <SelectContent>
+                {SETUP_GRADES.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Notes */}
           <div className="col-span-2 space-y-1.5">

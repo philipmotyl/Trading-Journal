@@ -67,12 +67,9 @@ function ExpandedNotes({ trade }: { trade: Trade }) {
       )}
 
       {trade.emotion && (
-        <div className="min-w-[140px]">
+        <div className="min-w-[100px]">
           <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Emotion</p>
-          <p className="text-sm font-semibold text-primary">{trade.emotion}</p>
-          {trade.emotionNotes && (
-            <p className="mt-1 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">{trade.emotionNotes}</p>
-          )}
+          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{trade.emotion}</span>
         </div>
       )}
 
