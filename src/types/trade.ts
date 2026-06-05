@@ -34,14 +34,16 @@ export interface PlaybookEntry {
 }
 
 export const STRATEGIES = [
-  'Opening Drive',
-  'Pullback Retest',
   'ICT Model 3',
-  'Morning Top Reversal',
-  'Absorption Reversal',
-  'Breakout',
-  'Gap Fill',
-  'Other',
+  'Silver Bullet',
+  'Power of 3',
+  'London Open',
+  'New York Open',
+  'Judas Swing',
+  'OTE',
+  'Order Block',
+  'Fair Value Gap',
+  'Breaker Block',
 ] as const
 
 export const MISTAKE_OPTIONS = [
