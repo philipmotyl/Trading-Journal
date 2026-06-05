@@ -1,7 +1,7 @@
 'use client'
 
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  AreaChart, Area, XAxis, YAxis, Tooltip,
   ResponsiveContainer, ReferenceLine,
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,7 +36,6 @@ export default function EquityCurve({ data }: { data: Point[] }) {
                 <stop offset="95%" stopColor={lineColor} stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={GRID} />
             <XAxis
               dataKey="date"
               tick={{ fontSize: 10, fill: LABELS }}

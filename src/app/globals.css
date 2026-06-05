@@ -42,7 +42,7 @@
    LIGHT  (crisp, purple-accented)
 ───────────────────────────────────── */
 :root {
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --background:              #f5f6fa;
   --foreground:              #0f172a;
   --card:                    #ffffff;

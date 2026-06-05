@@ -1,7 +1,7 @@
 'use client'
 
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, Cell, ReferenceLine,
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -27,7 +27,6 @@ export default function TimeOfDayChart({ data }: { data: HourStat[] }) {
         ) : (
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
               <XAxis dataKey="label" tick={{ fontSize: 10, fill: LABELS }} tickLine={false} axisLine={false} />
               <YAxis tickFormatter={fmt$} tick={{ fontSize: 10, fill: LABELS }} tickLine={false} axisLine={false} width={56} />
               <Tooltip

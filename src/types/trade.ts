@@ -14,11 +14,23 @@ export interface Trade {
   netPnL: number
   status: TradeStatus
   strategy?: string
+  emotion?: string
+  setupTags?: string[]
   notes?: string
   mistakes?: string[]
   tags?: string[]
   duration?: number    // minutes
   screenshot?: string  // base64 compressed JPEG
+}
+
+export interface PlaybookEntry {
+  id: string
+  name: string
+  description?: string
+  entryRules?: string
+  exitRules?: string
+  riskNotes?: string
+  createdAt: string
 }
 
 export const STRATEGIES = [
@@ -44,3 +56,26 @@ export const MISTAKE_OPTIONS = [
 ] as const
 
 export const SYMBOLS = ['MES', 'ES', 'MNQ', 'NQ', 'MCL', 'MGC', 'MBT'] as const
+
+export const EMOTIONS = [
+  'Calm',
+  'Confident',
+  'Disciplined',
+  'Anxious',
+  'Fearful',
+  'Greedy',
+  'FOMO',
+  'Revenge',
+] as const
+
+export const SETUP_TAGS = [
+  'Clean setup',
+  'B-grade setup',
+  'Impulsive entry',
+  'Waited for confirmation',
+  'Chased price',
+  'Counter-trend',
+  'With trend',
+  'News-driven',
+  'Pre-market plan',
+] as const

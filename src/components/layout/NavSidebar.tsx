@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ListOrdered, CalendarDays, BarChart3, LineChart, Settings, Sun, Moon } from 'lucide-react'
+import { LayoutDashboard, ListOrdered, CalendarDays, BarChart3, LineChart, Settings, Sun, Moon, BookOpen } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ const navItems = [
   { href: '/calendar',  icon: CalendarDays,    label: 'Calendar' },
   { href: '/analytics', icon: LineChart,       label: 'Analytics' },
   { href: '/reports',   icon: BarChart3,       label: 'Reports' },
+  { href: '/playbook',  icon: BookOpen,        label: 'Playbook' },
 ]
 
 export default function NavSidebar() {

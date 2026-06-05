@@ -1,7 +1,7 @@
 'use client'
 
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, Cell, ReferenceLine,
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -35,7 +35,6 @@ export default function DailyPnLChart({ data }: { data: Point[] }) {
       <CardContent>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={recent} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
             <XAxis
               dataKey="date"
               tickFormatter={shortDate}

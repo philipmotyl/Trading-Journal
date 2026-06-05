@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { STRATEGIES, SYMBOLS } from '@/types/trade'
+import { STRATEGIES, SYMBOLS, EMOTIONS, SETUP_TAGS } from '@/types/trade'
 import type { Trade } from '@/types/trade'
 
 interface Props {
@@ -115,6 +115,8 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
       quantity: f.quantity ?? 1,
       grossPnL: f.grossPnL ?? 0,
       strategy: f.strategy,
+      emotion: f.emotion,
+      setupTags: f.setupTags,
       notes: f.notes,
       mistakes: f.mistakes,
       tags: f.tags,
@@ -225,11 +227,36 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
             </Select>
           </div>
 
+          {/* Emotion */}
+          <div className="space-y-1.5">
+            <Label>Emotion</Label>
+            <Select value={f.emotion ?? ''} onValueChange={v => set('emotion', v)}>
+              <SelectTrigger><SelectValue placeholder="How did you feel?" /></SelectTrigger>
+              <SelectContent>
+                {EMOTIONS.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Setup quality */}
+          <div className="space-y-1.5">
+            <Label>Setup Quality</Label>
+            <Select
+              value={f.setupTags?.[0] ?? ''}
+              onValueChange={v => set('setupTags', v ? [v] : [])}
+            >
+              <SelectTrigger><SelectValue placeholder="Rate the setup…" /></SelectTrigger>
+              <SelectContent>
+                {SETUP_TAGS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Notes */}
           <div className="col-span-2 space-y-1.5">
             <Label>Notes</Label>
             <textarea
-              className="h-16 w-full resize-none rounded-md border border-input bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+              className="h-20 w-full resize-none rounded-xl border border-input bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               placeholder="What did you see? What worked or failed?"
               value={f.notes ?? ''}
               onChange={e => set('notes', e.target.value)}
