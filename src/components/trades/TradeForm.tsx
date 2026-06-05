@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { STRATEGIES, SYMBOLS, EMOTIONS, SETUP_TAGS } from '@/types/trade'
+import { STRATEGIES, SYMBOLS, EMOTIONS, SETUP_GRADES } from '@/types/trade'
 import type { Trade } from '@/types/trade'
 
 interface Props {
@@ -116,6 +116,7 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
       grossPnL: f.grossPnL ?? 0,
       strategy: f.strategy,
       emotion: f.emotion,
+      emotionNotes: f.emotionNotes,
       setupTags: f.setupTags,
       notes: f.notes,
       mistakes: f.mistakes,
@@ -207,13 +208,15 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
 
           {/* P&L */}
           <div className="col-span-2 space-y-1.5">
-            <Label>
+            <Label className="flex items-center gap-2">
               P&L
-              <span className={`ml-2 text-sm font-semibold tabular-nums ${(f.grossPnL ?? 0) >= 0 ? 'text-emerald-500' : 'text-red-400'}`}>
-                {(f.grossPnL ?? 0) >= 0 ? '+' : ''}{(f.grossPnL ?? 0).toFixed(2)}
-              </span>
+              {!!f.grossPnL && (
+                <span className={`text-sm font-semibold tabular-nums ${f.grossPnL >= 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                  {f.grossPnL >= 0 ? '+' : ''}{f.grossPnL.toFixed(2)}
+                </span>
+              )}
             </Label>
-            <Input type="number" step="0.01" value={f.grossPnL ?? ''} onChange={e => set('grossPnL', +e.target.value)} />
+            <Input type="number" step="0.01" value={f.grossPnL || ''} onChange={e => set('grossPnL', +e.target.value)} placeholder="Auto-calculated from prices" />
           </div>
 
           {/* Strategy */}
@@ -228,7 +231,7 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
           </div>
 
           {/* Emotion */}
-          <div className="space-y-1.5">
+          <div className={f.emotion ? 'col-span-2 space-y-1.5' : 'space-y-1.5'}>
             <Label>Emotion</Label>
             <Select value={f.emotion ?? ''} onValueChange={v => set('emotion', v)}>
               <SelectTrigger><SelectValue placeholder="How did you feel?" /></SelectTrigger>
@@ -238,19 +241,59 @@ export default function TradeForm({ onAdd, onUpdate, trade }: Props) {
             </Select>
           </div>
 
-          {/* Setup quality */}
-          <div className="space-y-1.5">
-            <Label>Setup Quality</Label>
-            <Select
-              value={f.setupTags?.[0] ?? ''}
-              onValueChange={v => set('setupTags', v ? [v] : [])}
-            >
-              <SelectTrigger><SelectValue placeholder="Rate the setup…" /></SelectTrigger>
-              <SelectContent>
-                {SETUP_TAGS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Setup grade — only show when emotion is NOT selected (stays on same row) */}
+          {!f.emotion && (
+            <div className="space-y-1.5">
+              <Label>Setup Grade</Label>
+              <Select
+                value={f.setupTags?.[0] ?? ''}
+                onValueChange={v => set('setupTags', v ? [v] : [])}
+              >
+                <SelectTrigger><SelectValue placeholder="A+, A, B…" /></SelectTrigger>
+                <SelectContent>
+                  {SETUP_GRADES.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Emotion "why?" follow-up — spans both columns, replaces empty slot */}
+          {f.emotion && (
+            <div className="col-span-2 space-y-1.5">
+              <Label className="text-muted-foreground text-xs">
+                Why did you feel <span className="text-foreground font-semibold">{f.emotion}</span>?
+              </Label>
+              <textarea
+                className="h-16 w-full resize-none rounded-xl border border-input bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                placeholder="What caused this feeling? Was it news, price action, a previous trade…?"
+                value={f.emotionNotes ?? ''}
+                onChange={e => set('emotionNotes', e.target.value)}
+              />
+            </div>
+          )}
+
+          {/* Setup grade — below emotion notes when emotion is selected */}
+          {f.emotion && (
+            <div className="col-span-2 space-y-1.5">
+              <Label>Setup Grade</Label>
+              <div className="flex flex-wrap gap-2">
+                {SETUP_GRADES.map(g => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => set('setupTags', f.setupTags?.[0] === g ? [] : [g])}
+                    className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
+                      f.setupTags?.[0] === g
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                    }`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Notes */}
           <div className="col-span-2 space-y-1.5">

@@ -15,6 +15,7 @@ export interface Trade {
   status: TradeStatus
   strategy?: string
   emotion?: string
+  emotionNotes?: string
   setupTags?: string[]
   notes?: string
   mistakes?: string[]
@@ -68,14 +69,7 @@ export const EMOTIONS = [
   'Revenge',
 ] as const
 
-export const SETUP_TAGS = [
-  'Clean setup',
-  'B-grade setup',
-  'Impulsive entry',
-  'Waited for confirmation',
-  'Chased price',
-  'Counter-trend',
-  'With trend',
-  'News-driven',
-  'Pre-market plan',
-] as const
+export const SETUP_GRADES = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'] as const
+export type SetupGrade = typeof SETUP_GRADES[number]
+
+export const SETUP_TAGS = SETUP_GRADES

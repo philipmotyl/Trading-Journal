@@ -52,16 +52,39 @@ function ScreenshotViewer({ src, onClose }: { src: string; onClose: () => void }
 }
 
 function ExpandedNotes({ trade }: { trade: Trade }) {
+  const hasContent = trade.notes || trade.emotion || trade.mistakes?.length || trade.tags?.length || trade.setupTags?.length
   return (
     <div className="flex flex-wrap gap-6 px-6 py-4 bg-accent/5 border-t border-border/50">
-      {trade.notes ? (
+      {!hasContent && (
+        <p className="text-xs text-muted-foreground italic">No notes for this trade.</p>
+      )}
+
+      {trade.notes && (
         <div className="flex-1 min-w-[200px]">
           <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Notes</p>
           <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{trade.notes}</p>
         </div>
-      ) : (
-        <p className="text-xs text-muted-foreground italic">No notes for this trade.</p>
       )}
+
+      {trade.emotion && (
+        <div className="min-w-[140px]">
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Emotion</p>
+          <p className="text-sm font-semibold text-primary">{trade.emotion}</p>
+          {trade.emotionNotes && (
+            <p className="mt-1 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">{trade.emotionNotes}</p>
+          )}
+        </div>
+      )}
+
+      {trade.setupTags && trade.setupTags.length > 0 && (
+        <div className="min-w-[80px]">
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Setup Grade</p>
+          <span className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
+            {trade.setupTags[0]}
+          </span>
+        </div>
+      )}
+
       {trade.mistakes && trade.mistakes.length > 0 && (
         <div className="min-w-[140px]">
           <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Mistakes</p>
@@ -72,6 +95,7 @@ function ExpandedNotes({ trade }: { trade: Trade }) {
           </div>
         </div>
       )}
+
       {trade.tags && trade.tags.length > 0 && (
         <div className="min-w-[120px]">
           <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Tags</p>
